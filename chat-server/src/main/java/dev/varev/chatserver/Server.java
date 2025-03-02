@@ -26,13 +26,17 @@ public class Server {
                 PrintWriter out = new PrintWriter(client.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
+                out.println("Enter username: ");
+                String userName = in.readLine();
+
                 out.println("Enter channel name: ");
                 String channelName = in.readLine();
 
                 Channel channel = channels.computeIfAbsent(channelName, Channel::new);
-                ClientHandler clientHandler = new ClientHandler(client, channel);
+                ClientHandler clientHandler = new ClientHandler(client, channel, userName);
 
-                new Thread(clientHandler).start();
+                System.out.println("[" + userName + "]" + " connected to " + channelName);
+                clientHandler.run();
             }
         } catch (IOException e) {
             System.out.println("Server stopping...");
