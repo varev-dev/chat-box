@@ -12,8 +12,8 @@ public class Channel {
 
     public void broadcast(String message, ClientHandler sender) {
         for (ClientHandler client : clients) {
-            if (client != sender)
-                client.sendMessage(message);
+            //if (client != sender)
+                client.sendMessage("[" + name + "]" + " " + message);
         }
     }
 

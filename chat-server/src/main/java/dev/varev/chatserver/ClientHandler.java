@@ -14,9 +14,10 @@ public class ClientHandler implements Runnable {
     private final Channel channel;
     private String username;
 
-    public ClientHandler(Socket socket, Channel channel) {
+    public ClientHandler(Socket socket, Channel channel, String username) {
         this.socket = socket;
         this.channel = channel;
+        this.username = username;
 
         try {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -33,10 +34,15 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            username = "abc";
             channel.addClient(this);
+
             String message;
-            while ((message = in.readLine()) != null) {
+            while (true) {
+                message = in.readLine();
+                if (message == null) {
+                    if (!socket.isConnected())
+                        socket.close();
+                }
                 channel.broadcast(username + ": " + message, this);
             }
         } catch (IOException e) {
