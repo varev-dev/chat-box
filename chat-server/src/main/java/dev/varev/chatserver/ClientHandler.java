@@ -12,7 +12,7 @@ public class ClientHandler implements Runnable {
     private final PrintWriter out;
 
     private final Channel channel;
-    private String username;
+    private final String username;
 
     public ClientHandler(Socket socket, Channel channel, String username) {
         this.socket = socket;
@@ -39,17 +39,19 @@ public class ClientHandler implements Runnable {
             String message;
             while (true) {
                 message = in.readLine();
-                if (message == null) {
-                    if (!socket.isConnected())
-                        socket.close();
-                }
+                if (message.compareTo("exit") == 0)
+                    break;
+
                 channel.broadcast(username + ": " + message, this);
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            System.out.println(username + " disconnected from [" + channel.getName() + "]");
             channel.removeClient(this);
             try {
+                in.close();
+                out.close();
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
