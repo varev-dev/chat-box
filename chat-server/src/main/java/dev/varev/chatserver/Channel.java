@@ -1,18 +1,20 @@
 package dev.varev.chatserver;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class Channel {
     private final String name;
-    private Set<ClientHandler> clients;
+    private final Set<ClientHandler> clients;
 
     public Channel(String name) {
         this.name = name;
+        this.clients = new HashSet<>();
     }
 
     public void broadcast(String message, ClientHandler sender) {
         for (ClientHandler client : clients) {
-            //if (client != sender)
+            if (client != sender)
                 client.sendMessage("[" + name + "]" + " " + message);
         }
     }
@@ -23,5 +25,9 @@ public class Channel {
 
     public void removeClient(ClientHandler client) {
         clients.remove(client);
+    }
+
+    public String getName() {
+        return name;
     }
 }
