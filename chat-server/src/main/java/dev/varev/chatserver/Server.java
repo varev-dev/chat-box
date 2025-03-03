@@ -21,6 +21,7 @@ public class Server {
     public void run() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Server listening on port " + port);
+
             while (true) {
                 Socket client = serverSocket.accept();
                 PrintWriter out = new PrintWriter(client.getOutputStream(), true);
@@ -32,11 +33,14 @@ public class Server {
                 out.println("Enter channel name: ");
                 String channelName = in.readLine();
 
-                Channel channel = channels.computeIfAbsent(channelName, Channel::new);
-                ClientHandler clientHandler = new ClientHandler(client, channel, userName);
+                if (client.isConnected()) {
+                    Channel channel = channels.computeIfAbsent(channelName, Channel::new);
+                    ClientHandler clientHandler = new ClientHandler(client, channel, userName);
 
-                System.out.println("[" + userName + "]" + " connected to " + channelName);
-                clientHandler.run();
+                    System.out.println(userName + " connected to " + "[" + channel.getName() + "]" );
+                    var t = new Thread(clientHandler);
+                    t.start();
+                }
             }
         } catch (IOException e) {
             System.out.println("Server stopping...");
