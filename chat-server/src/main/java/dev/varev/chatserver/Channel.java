@@ -12,6 +12,11 @@ public class Channel {
         this.clients = new HashSet<>();
     }
 
+    public void broadcastDisconnect(ClientHandler sender) {
+        String message = sender.getUsername() + " disconnected from [" + name + "].";
+        broadcast(message, sender);
+    }
+
     public void broadcast(String message, ClientHandler sender) {
         for (ClientHandler client : clients) {
             if (client != sender)
