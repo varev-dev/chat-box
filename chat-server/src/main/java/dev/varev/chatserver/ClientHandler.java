@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import org.jetbrains.annotations.NotNull;
+
 public class ClientHandler implements Runnable {
     private final Socket socket;
     private final BufferedReader in;
@@ -14,8 +16,12 @@ public class ClientHandler implements Runnable {
     private final Channel channel;
     private final String username;
 
-    public ClientHandler(Socket socket, Channel channel, String username) {
+    public ClientHandler(@NotNull Socket socket, Channel channel, String username) {
         this.socket = socket;
+
+        if (socket.isClosed())
+            throw new IllegalArgumentException("Socket is closed");
+
         this.channel = channel;
         this.username = username;
 
@@ -29,6 +35,18 @@ public class ClientHandler implements Runnable {
 
     public void sendMessage(String message) {
         out.println(message);
+    }
+
+    private void disconnectFromChannel() {
+        System.out.println(username + " disconnected from [" + channel.getName() + "]");
+        channel.broadcast(username + " disconnected", this);
+        channel.removeClient(this);
+    }
+
+    private void closeConnection() throws IOException {
+        in.close();
+        out.close();
+        socket.close();
     }
 
     @Override
@@ -47,16 +65,16 @@ public class ClientHandler implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            System.out.println(username + " disconnected from [" + channel.getName() + "]");
-            channel.removeClient(this);
+            disconnectFromChannel();
             try {
-                in.close();
-                out.close();
-                socket.close();
+                closeConnection();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
 
+    public String getUsername() {
+        return username;
     }
 }
