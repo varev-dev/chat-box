@@ -12,19 +12,35 @@ public class Channel {
         this.clients = new HashSet<>();
     }
 
+    public void broadcastAdmin(String message) {
+        broadcast(message, null);
+    }
+
+    public void broadcastJoin(ClientHandler sender) {
+        String message = sender.getUsername() + " joined the channel.";
+        broadcast(message, sender);
+    }
+
     public void broadcastDisconnect(ClientHandler sender) {
-        String message = sender.getUsername() + " disconnected from [" + name + "].";
+        String message = sender.getUsername() + " disconnected from this channel.";
         broadcast(message, sender);
     }
 
     public void broadcast(String message, ClientHandler sender) {
         for (ClientHandler client : clients) {
             if (client != sender)
-                client.sendMessage("[" + name + "]" + " " + message);
+                client.sendMessage(
+                    (message.startsWith(Server.BROADCAST_PREFIX) ? "" : "[" + name + "]" + " ") + message);
         }
     }
 
+    public void close() {
+        for (ClientHandler client : clients)
+            client.closeConnection();
+    }
+
     public void addClient(ClientHandler client) {
+        broadcastJoin(client);
         clients.add(client);
     }
 
