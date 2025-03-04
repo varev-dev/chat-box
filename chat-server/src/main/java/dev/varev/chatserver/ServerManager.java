@@ -1,9 +1,5 @@
 package dev.varev.chatserver;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Scanner;
 
 public class ServerManager {
@@ -21,9 +17,19 @@ public class ServerManager {
         while (true) {
             command = in.nextLine();
             if (command.compareTo(EXIT_COMMAND) == 0) {
-                this.server.stop();
+                synchronized (server) {
+                    this.server.stop();
+                }
                 break;
             }
+        }
+        in.close();
+
+        synchronized (server) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ignored) {}
+            System.out.println("Manager shutting down...");
         }
     }
 }
