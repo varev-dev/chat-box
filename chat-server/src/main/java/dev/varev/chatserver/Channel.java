@@ -13,7 +13,7 @@ public class Channel {
     }
 
     public void broadcastAdmin(String message) {
-        broadcast(message, null);
+        broadcast(Server.BROADCAST_PREFIX + " " + message, null);
     }
 
     public void broadcastJoin(ClientHandler sender) {
@@ -35,6 +35,7 @@ public class Channel {
     }
 
     public void close() {
+        broadcastAdmin("Channel '" + name + "' is being closed.");
         for (ClientHandler client : clients)
             client.closeConnection();
     }
@@ -44,7 +45,23 @@ public class Channel {
         clients.add(client);
     }
 
+    public boolean removeClientWithName(String name) {
+        for (ClientHandler client : clients) {
+            if (client.getUsername().equals(name)) {
+                client.sendMessage(Server.BROADCAST_PREFIX + " You have been removed.");
+                removeClient(client);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasUserWithName(String name) {
+        return clients.stream().anyMatch(client -> client.getUsername().equals(name));
+    }
+
     public void removeClient(ClientHandler client) {
+        client.closeConnection();
         clients.remove(client);
     }
 

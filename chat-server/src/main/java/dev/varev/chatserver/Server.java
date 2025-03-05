@@ -44,10 +44,12 @@ public class Server implements Runnable {
 
         Map<String, String> userData = new HashMap<>();
 
-        out.println("Enter username: ");
+        out.print("Enter username: ");
+        out.flush();
         String userName = in.readLine();
 
-        out.println("Enter channel name: ");
+        out.print("Enter channel name: ");
+        out.flush();
         String channelName = in.readLine();
 
         userData.put("username", userName);
@@ -69,10 +71,8 @@ public class Server implements Runnable {
     }
 
     private void shutdown() {
-        for (var channel : channels.values()) {
-            channel.broadcastAdmin(BROADCAST_PREFIX + " " + channel.getName() + " shutting down");
+        for (var channel : channels.values())
             channel.close();
-        }
 
         System.out.println("Server stopping...");
     }
