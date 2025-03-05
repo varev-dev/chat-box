@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Server implements Runnable {
-    public static final String BROADCAST_PREFIX = "[SERVER] ";
+    public static final String BROADCAST_PREFIX = "[SERVER]";
     private final int port;
-    private static Map<String, Channel> channels;
+    private final Map<String, Channel> channels;
     private State state;
 
     public enum State {
@@ -70,7 +70,7 @@ public class Server implements Runnable {
 
     private void shutdown() {
         for (var channel : channels.values()) {
-            channel.broadcastAdmin(BROADCAST_PREFIX + channel.getName() + " shutting down");
+            channel.broadcastAdmin(BROADCAST_PREFIX + " " + channel.getName() + " shutting down");
             channel.close();
         }
 
@@ -94,5 +94,9 @@ public class Server implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Map<String, Channel> getChannels() {
+        return channels;
     }
 }

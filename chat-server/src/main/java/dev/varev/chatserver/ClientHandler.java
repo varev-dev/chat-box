@@ -44,6 +44,10 @@ public class ClientHandler implements Runnable {
         channel.removeClient(this);
     }
 
+    protected boolean isConnected() {
+        return socket.isConnected();
+    }
+
     protected void closeConnection() {
         try {
             socket.close();
