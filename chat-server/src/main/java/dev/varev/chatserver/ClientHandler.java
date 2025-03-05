@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -39,14 +40,22 @@ public class ClientHandler implements Runnable {
 
     private void disconnectFromChannel() {
         System.out.println(username + " disconnected from [" + channel.getName() + "]");
-        channel.broadcast(username + " disconnected", this);
+        channel.broadcastDisconnect(this);
         channel.removeClient(this);
     }
 
-    private void closeConnection() throws IOException {
-        in.close();
-        out.close();
-        socket.close();
+    protected boolean isConnected() {
+        return socket.isConnected();
+    }
+
+    protected void closeConnection() {
+        try {
+            socket.close();
+            in.close();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -55,8 +64,14 @@ public class ClientHandler implements Runnable {
             channel.addClient(this);
 
             String message;
+
             while (true) {
-                message = in.readLine();
+                try {
+                    message = in.readLine();
+                } catch (SocketException e) {
+                    break;
+                }
+
                 if (message.compareTo("exit") == 0)
                     break;
 
@@ -65,11 +80,9 @@ public class ClientHandler implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            disconnectFromChannel();
-            try {
+            if (!socket.isClosed()) {
+                disconnectFromChannel();
                 closeConnection();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }

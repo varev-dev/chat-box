@@ -11,8 +11,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Server implements Runnable {
+    public static final String BROADCAST_PREFIX = "[SERVER]";
     private final int port;
-    private static Map<String, Channel> channels;
+    private final Map<String, Channel> channels;
     private State state;
 
     public enum State {
@@ -29,6 +30,7 @@ public class Server implements Runnable {
         this.state = State.OFF;
 
         try {
+            // need to flush runner in order to stop server
             Socket socket = new Socket("127.0.0.1", port);
             socket.close();
         } catch (IOException e) {
@@ -42,10 +44,12 @@ public class Server implements Runnable {
 
         Map<String, String> userData = new HashMap<>();
 
-        out.println("Enter username: ");
+        out.print("Enter username: ");
+        out.flush();
         String userName = in.readLine();
 
-        out.println("Enter channel name: ");
+        out.print("Enter channel name: ");
+        out.flush();
         String channelName = in.readLine();
 
         userData.put("username", userName);
@@ -66,6 +70,13 @@ public class Server implements Runnable {
         }
     }
 
+    private void shutdown() {
+        for (var channel : channels.values())
+            channel.close();
+
+        System.out.println("Server stopping...");
+    }
+
     @Override
     public void run() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -79,8 +90,13 @@ public class Server implements Runnable {
                 var userData = getNameAndChannel(client);
                 connectUserToChannel(client, userData);
             }
+            shutdown();
         } catch (IOException e) {
-            System.out.println("Server stopping...");
+            e.printStackTrace();
         }
+    }
+
+    public Map<String, Channel> getChannels() {
+        return channels;
     }
 }
