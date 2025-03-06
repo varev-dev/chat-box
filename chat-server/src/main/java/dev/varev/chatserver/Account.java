@@ -8,8 +8,12 @@ public class Account {
     private final String username;
     private String password;
     private final byte[] salt;
+
     private final LocalDateTime createdAt;
     private LocalDateTime lastLogin;
+
+    private boolean isBlocked;
+    private LocalDateTime blockedUntil;
 
     public Account(String username, String password) {
         this.id = UUID.randomUUID().getMostSignificantBits();
@@ -22,6 +26,8 @@ public class Account {
         }
         this.createdAt = LocalDateTime.now();
         this.lastLogin = createdAt;
+        this.isBlocked = false;
+        this.blockedUntil = null;
     }
 
     public boolean verify(String password) {
@@ -45,5 +51,9 @@ public class Account {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public String getUsername() {
+        return username;
     }
 }
