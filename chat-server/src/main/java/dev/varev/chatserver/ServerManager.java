@@ -7,11 +7,9 @@ public class ServerManager {
     private final Server server;
     private final Scanner in;
 
-
     private enum Commands {
         EXIT("exit"),
         BLOCK("block"),;
-
 
         final String code;
         Commands(String code) {
