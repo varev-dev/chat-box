@@ -47,3 +47,11 @@ mvn clean install
 ```
 java -jar chat-server.jar
 ```
+
+## Connect to Server
+You can easily play with server using [Telnet](https://en.wikipedia.org/wiki/Telnet).
+
+Replace ADDRESS with the server's domain name or IP address, and PORT with the desired port number:
+```
+telnet ADDRESS PORT
+```
