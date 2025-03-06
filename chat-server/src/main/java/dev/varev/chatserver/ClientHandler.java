@@ -15,16 +15,16 @@ public class ClientHandler implements Runnable {
     private final PrintWriter out;
 
     private final Channel channel;
-    private final String username;
+    private final Account account;
 
-    public ClientHandler(@NotNull Socket socket, Channel channel, String username) {
+    public ClientHandler(@NotNull Socket socket, Channel channel, Account account) {
         this.socket = socket;
 
         if (socket.isClosed())
             throw new IllegalArgumentException("Socket is closed");
 
         this.channel = channel;
-        this.username = username;
+        this.account = account;
 
         try {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -39,7 +39,7 @@ public class ClientHandler implements Runnable {
     }
 
     private void disconnectFromChannel() {
-        System.out.println(username + " disconnected from [" + channel.getName() + "]");
+        System.out.println(account.getUsername() + " disconnected from [" + channel.getName() + "]");
         channel.broadcastDisconnect(this);
         channel.removeClient(this);
     }
@@ -75,7 +75,7 @@ public class ClientHandler implements Runnable {
                 if (message.compareTo("exit") == 0)
                     break;
 
-                channel.broadcast(username + ": " + message, this);
+                channel.broadcast(account.getUsername()+ ": " + message, this);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -88,6 +88,6 @@ public class ClientHandler implements Runnable {
     }
 
     public String getUsername() {
-        return username;
+        return account.getUsername();
     }
 }
