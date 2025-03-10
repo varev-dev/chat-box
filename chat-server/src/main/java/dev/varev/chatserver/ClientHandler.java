@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 
@@ -160,7 +161,7 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            if(!setup())
+            if (!setup())
                 return;
             channel.addClient(this);
 
@@ -173,7 +174,7 @@ public class ClientHandler implements Runnable {
                     break;
                 }
 
-                if (message.compareTo("exit") == 0)
+                if (message.equalsIgnoreCase("exit"))
                     break;
 
                 channel.broadcast(account.getUsername()+ ": " + message, this);

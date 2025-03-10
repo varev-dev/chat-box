@@ -52,7 +52,7 @@ public class Channel {
     public boolean removeClientWithName(String name) {
         for (ClientHandler client : clients) {
             if (client.getUsername().equals(name)) {
-                client.sendMessage(Server.BROADCAST_PREFIX + " You have been removed.");
+                client.sendMessage(Server.BROADCAST_PREFIX + " You have been removed from the channel.");
                 removeClient(client);
                 return true;
             }
@@ -71,5 +71,9 @@ public class Channel {
 
     public String getName() {
         return name;
+    }
+
+    public Set<ClientHandler> getClients() {
+        return clients;
     }
 }
