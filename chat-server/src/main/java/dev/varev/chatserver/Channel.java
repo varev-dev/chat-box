@@ -12,6 +12,10 @@ public class Channel {
         this.clients = new HashSet<>();
     }
 
+    public static boolean validateName(String name) {
+        return name.matches("^[a-zA-Z0-9@#$&!?_-]{3,64}$");
+    }
+
     public void broadcastAdmin(String message) {
         broadcast(Server.BROADCAST_PREFIX + " " + message, null);
     }

@@ -49,8 +49,10 @@ public class ClientHandler implements Runnable {
 
         String channelName = in.readLine().trim().toUpperCase();
 
-        if (channelName.length() < 3)
+        if (!Channel.validateName(channelName)) {
+            out.println("Invalid channel name: " + channelName);
             return null;
+        }
 
         Channel channel;
         channel = channels.computeIfAbsent(channelName, Channel::new);
