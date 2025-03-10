@@ -1,9 +1,11 @@
 package dev.varev.chatserver;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class Account {
+    public static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(30);
     private final long id;
     private final String username;
     private String password;
@@ -19,11 +21,13 @@ public class Account {
         this.id = UUID.randomUUID().getMostSignificantBits();
         this.username = username;
         this.salt = PasswordHasher.generateSalt();
+
         try {
             this.password = PasswordHasher.hashPassword(password, salt);
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         this.createdAt = LocalDateTime.now();
         this.lastLogin = createdAt;
         this.isBlocked = false;
@@ -32,6 +36,15 @@ public class Account {
 
     public boolean verify(String password) {
         boolean verification = false;
+
+        if (this.isBlocked) {
+            if (this.blockedUntil.isAfter(LocalDateTime.now())) {
+                return false;
+            } else {
+                this.isBlocked = false;
+            }
+        }
+
         try {
             verification = PasswordHasher.verifyPassword(password, this.password, salt);
         } catch (Exception e) {
@@ -55,5 +68,10 @@ public class Account {
 
     public String getUsername() {
         return username;
+    }
+
+    public void block(Duration duration) {
+        this.isBlocked = true;
+        this.blockedUntil = LocalDateTime.now().plus(duration);
     }
 }
