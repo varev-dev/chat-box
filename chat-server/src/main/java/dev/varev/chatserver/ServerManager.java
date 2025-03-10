@@ -2,6 +2,7 @@ package dev.varev.chatserver;
 
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 public class ServerManager {
     private final Server server;
@@ -34,13 +35,25 @@ public class ServerManager {
 
     private boolean blockObject(ObjectType type, String name) {
         if (type == ObjectType.USER) {
-            Map<String, Channel> channels = server.getChannels();
+            Set<Account> accounts = server.getAccounts();
+            boolean blocked = false;
 
-            for (Map.Entry<String, Channel> entry : channels.entrySet()) {
-                if (entry.getValue().hasUserWithName(name))
-                    return entry.getValue().removeClientWithName(name);
+            for (Account account : accounts) {
+                if (account.getUsername().equals(name)) {
+                    account.block(Account.DEFAULT_TIMEOUT);
+                    blocked = true;
+                }
             }
-            return false; // mb ret no user exception
+
+            var channels = server.getChannels();
+            for (Channel channel : channels.values()) {
+                var clientHandler = channel.getClients().stream()
+                        .filter(client -> client.getUsername().equals(name)).findFirst();
+
+                clientHandler.ifPresent(ClientHandler::closeConnection);
+            }
+
+            return blocked; // mb ret no user exception
         } else if (type == ObjectType.CHANNEL) {
             var channel = server.getChannels().values()
                     .stream().filter(ch -> ch.getName().equals(name)).findFirst();
@@ -62,21 +75,24 @@ public class ServerManager {
         try {
             String input = in.nextLine();
             for (var t : ObjectType.values()) {
-                if (String.valueOf(t.code).equals(input)) {
+                if (String.valueOf(t.code).equals(input) || t.toString().equalsIgnoreCase(input)) {
                     type = t;
                     break;
                 }
             }
-            if (type == null)
+            if (type == null) {
+                System.out.println("Invalid object type");
                 return;
+            }
         } catch (IllegalArgumentException e) {
-            System.out.println("Invalid type");
+            System.out.println("Invalid object type");
             return;
         }
 
         System.out.println("Enter " + type + " name:");
         name = in.nextLine();
-        blockObject(type, name);
+
+        System.out.println(type + " named " + name + (blockObject(type, name) ? " blocked." : " not found."));
     }
 
     public void run() {
