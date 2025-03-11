@@ -1,14 +1,20 @@
-package dev.varev.chatserver;
+package dev.varev.chatserver.channel;
+
+import dev.varev.chatserver.ClientHandler;
+import dev.varev.chatserver.server.Server;
+import dev.varev.chatserver.account.Account;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class Channel {
     private final String name;
+    private final Set<Account> accounts;
     private final Set<ClientHandler> clients;
 
     public Channel(String name) {
         this.name = name;
+        this.accounts = new HashSet<>();
         this.clients = new HashSet<>();
     }
 
@@ -47,6 +53,7 @@ public class Channel {
     public void addClient(ClientHandler client) {
         broadcastJoin(client);
         clients.add(client);
+        accounts.add(client.getAccount());
     }
 
     public boolean removeClientWithName(String name) {

@@ -1,4 +1,6 @@
-package dev.varev.chatserver;
+package dev.varev.chatserver.account;
+
+import dev.varev.chatserver.PasswordHasher;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

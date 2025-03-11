@@ -1,5 +1,8 @@
 package dev.varev.chatserver;
 
+import dev.varev.chatserver.server.Server;
+import dev.varev.chatserver.server.ServerManager;
+
 public class Main {
     public static void main(String[] args) {
         System.out.println("Server starting...");

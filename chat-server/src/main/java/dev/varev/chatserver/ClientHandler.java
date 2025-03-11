@@ -6,10 +6,11 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
-import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 
+import dev.varev.chatserver.account.Account;
+import dev.varev.chatserver.channel.Channel;
 import org.jetbrains.annotations.NotNull;
 
 public class ClientHandler implements Runnable {
@@ -203,5 +204,9 @@ public class ClientHandler implements Runnable {
 
     public String getUsername() {
         return account.getUsername();
+    }
+
+    public Account getAccount() {
+        return this.account;
     }
 }

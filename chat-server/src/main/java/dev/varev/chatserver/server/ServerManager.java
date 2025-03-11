@@ -1,6 +1,9 @@
-package dev.varev.chatserver;
+package dev.varev.chatserver.server;
 
-import java.util.Map;
+import dev.varev.chatserver.ClientHandler;
+import dev.varev.chatserver.account.Account;
+import dev.varev.chatserver.channel.Channel;
+
 import java.util.Scanner;
 import java.util.Set;
 
