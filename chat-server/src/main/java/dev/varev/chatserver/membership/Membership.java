@@ -11,4 +11,12 @@ public class Membership {
 
     private LocalDateTime joinedAt;
     private LocalDateTime leftAt;
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public Channel getChannel() {
+        return channel;
+    }
 }
