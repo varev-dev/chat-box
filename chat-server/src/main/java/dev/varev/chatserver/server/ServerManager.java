@@ -2,6 +2,7 @@ package dev.varev.chatserver.server;
 
 import dev.varev.chatserver.ClientHandler;
 import dev.varev.chatserver.account.Account;
+import dev.varev.chatserver.account.AccountConstants;
 import dev.varev.chatserver.channel.Channel;
 
 import java.util.Scanner;
@@ -43,7 +44,7 @@ public class ServerManager {
 
             for (Account account : accounts) {
                 if (account.getUsername().equals(name)) {
-                    account.block(Account.DEFAULT_TIMEOUT);
+                    account.block(AccountConstants.DEFAULT_TIMEOUT);
                     blocked = true;
                 }
             }

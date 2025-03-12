@@ -3,24 +3,24 @@ package dev.varev.chatserver.account;
 import dev.varev.chatserver.PasswordHasher;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class Account {
-    public static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(30);
-    private final long id;
+    private final UUID id;
     private final String username;
     private String password;
     private final byte[] salt;
 
-    private final LocalDateTime createdAt;
-    private LocalDateTime lastLogin;
+    private final Instant createdAt;
+    private Instant lastLogin;
 
-    private boolean isBlocked;
-    private LocalDateTime blockedUntil;
+    private boolean blocked;
+    private Instant blockedUntil;
 
     public Account(String username, String password) {
-        this.id = UUID.randomUUID().getMostSignificantBits();
+        this.id = UUID.randomUUID();
         this.username = username;
         this.salt = PasswordHasher.generateSalt();
 
@@ -30,50 +30,58 @@ public class Account {
             e.printStackTrace();
         }
 
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
         this.lastLogin = createdAt;
-        this.isBlocked = false;
+        this.blocked = false;
         this.blockedUntil = null;
     }
 
-    public boolean verify(String password) {
-        boolean verification = false;
-
-        if (this.isBlocked) {
-            if (this.blockedUntil.isAfter(LocalDateTime.now())) {
-                return false;
-            } else {
-                this.isBlocked = false;
-            }
-        }
-
-        try {
-            verification = PasswordHasher.verifyPassword(password, this.password, salt);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (!verification)
-            return false;
-
-        this.lastLogin = LocalDateTime.now();
-        return true;
-    }
-
-    public void changePassword(String newPassword) {
-        try {
-            this.password = PasswordHasher.hashPassword(newPassword, salt);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public UUID getId() {
+        return id;
     }
 
     public String getUsername() {
         return username;
     }
 
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        try {
+            this.password = PasswordHasher.hashPassword(password, salt);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected byte[] getSalt() {
+        return this.salt;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void unblock() {
+        this.blocked = false;
+    }
+
     public void block(Duration duration) {
-        this.isBlocked = true;
-        this.blockedUntil = LocalDateTime.now().plus(duration);
+        this.blocked = true;
+        this.blockedUntil = Instant.now().plus(duration);
+    }
+
+    public Instant getBlockedUntil() {
+        return blockedUntil;
+    }
+
+    public Instant getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(Instant lastLogin) {
+        this.lastLogin = lastLogin;
     }
 }
