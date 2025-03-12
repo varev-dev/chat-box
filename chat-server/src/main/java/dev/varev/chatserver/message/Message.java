@@ -13,11 +13,11 @@ public class Message {
     private final String content;
     private final Instant createdAt;
 
-    public Message(Membership membership, String content, Instant createdAt) {
+    public Message(Membership membership, String content) {
         this.uuid = UUID.randomUUID();
         this.membership = membership;
         this.content = content;
-        this.createdAt = createdAt;
+        this.createdAt = Instant.now();
     }
 
     protected UUID getUuid() {
