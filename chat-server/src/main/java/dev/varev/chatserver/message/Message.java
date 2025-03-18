@@ -2,20 +2,21 @@ package dev.varev.chatserver.message;
 
 import dev.varev.chatserver.account.Account;
 import dev.varev.chatserver.channel.Channel;
-import dev.varev.chatserver.membership.Membership;
 
 import java.time.Instant;
 import java.util.UUID;
 
 public class Message {
     private final UUID uuid;
-    private final Membership membership;
+    private final Account author;
+    private final Channel channel;
     private final String content;
     private final Instant createdAt;
 
-    public Message(Membership membership, String content) {
+    public Message(Account author, Channel channel, String content) {
         this.uuid = UUID.randomUUID();
-        this.membership = membership;
+        this.author = author;
+        this.channel = channel;
         this.content = content;
         this.createdAt = Instant.now();
     }
@@ -25,11 +26,11 @@ public class Message {
     }
 
     public Account getAuthor() {
-        return membership.getAccount();
+        return author;
     }
 
     public Channel getChannel() {
-        return membership.getChannel();
+        return channel;
     }
 
     public String getContent() {

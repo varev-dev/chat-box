@@ -20,6 +20,16 @@ public class MessageRepository {
         return Optional.ofNullable(messages.get(uuid));
     }
 
+    protected List<Message> getMessagesBySenderAndReceiver(Account sender, Channel receiver) {
+        var messagesBySender = getMessagesBySender(sender);
+        var messagesByReceiver = getMessagesByReceiver(receiver);
+
+        return messagesByReceiver.stream()
+                .filter(messagesBySender::contains)
+                .sorted(Comparator.comparing(Message::getCreatedAt))
+                .toList();
+    }
+
     protected List<Message> getMessagesBySender(Account sender) {
         return messages.values().stream()
                 .filter(message -> message.getAuthor() == sender)
