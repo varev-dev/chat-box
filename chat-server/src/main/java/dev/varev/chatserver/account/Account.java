@@ -4,7 +4,6 @@ import dev.varev.chatserver.PasswordHasher;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class Account {
@@ -27,6 +26,7 @@ public class Account {
         try {
             this.password = PasswordHasher.hashPassword(password, salt);
         } catch (Exception e) {
+            // TODO: throw Password hashing exception with an information
             e.printStackTrace();
         }
 
@@ -52,6 +52,7 @@ public class Account {
         try {
             this.password = PasswordHasher.hashPassword(password, salt);
         } catch (Exception e) {
+            // TODO: throw Password hasing exception with an information
             e.printStackTrace();
         }
     }

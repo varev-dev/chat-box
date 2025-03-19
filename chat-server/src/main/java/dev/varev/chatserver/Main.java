@@ -1,7 +1,7 @@
 package dev.varev.chatserver;
 
-import dev.varev.chatserver.server.Server;
-import dev.varev.chatserver.server.ServerManager;
+import dev.varev.chatserver.connection.Server;
+import dev.varev.chatserver.connection.ServerManager;
 
 public class Main {
     public static void main(String[] args) {
