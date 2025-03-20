@@ -4,6 +4,7 @@ import dev.varev.chatserver.account.Account;
 import dev.varev.chatserver.channel.Channel;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 public class MembershipService {
@@ -14,7 +15,11 @@ public class MembershipService {
     }
 
     protected Optional<Membership> getActiveMembership(Account account, Channel channel) {
-        return repo.getMembershipIfActive(account, channel);
+        return repo.getActiveMembership(account, channel);
+    }
+
+    protected List<Membership> getActiveMembershipsByAccount(Account account) {
+        return repo.getActiveMembershipsByAccount(account);
     }
 
     protected boolean addMembership(Account account, Channel channel) {
@@ -23,7 +28,7 @@ public class MembershipService {
     }
 
     protected boolean leaveMembership(Account account, Channel channel) {
-        var membership = repo.getMembershipIfActive(account, channel);
+        var membership = repo.getActiveMembership(account, channel);
 
         membership.ifPresent(value -> value.setLeftAt(Instant.now()));
         return membership.isPresent();
