@@ -1,23 +1,27 @@
 package dev.varev.chatserver.connection;
 
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-    private final Set<ClientHandler> connectedClients;
+    private static final ConnectionManager INSTANCE = new ConnectionManager();
+    private final Map<String, ClientHandler> activeClients = new ConcurrentHashMap<>();
 
-    public ConnectionManager(Set<ClientHandler> connectedClients) {
-        this.connectedClients = connectedClients;
+    public static ConnectionManager getInstance() {
+        return INSTANCE;
     }
 
-    public void addClientHandler(ClientHandler clientHandler) {
-        connectedClients.add(clientHandler);
+    public void addClientHandler(String username, ClientHandler clientHandler) {
+        activeClients.put(username, clientHandler);
     }
 
-    public void removeClientHandler(ClientHandler clientHandler) {
-        connectedClients.remove(clientHandler);
+    public synchronized void removeClientHandler(String username) {
+        activeClients.remove(username);
     }
 
     public Set<ClientHandler> getConnectedClients() {
-        return connectedClients;
+        return new HashSet<>(this.activeClients.values());
     }
 }
