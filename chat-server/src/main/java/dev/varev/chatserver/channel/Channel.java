@@ -25,6 +25,7 @@ public class Channel {
     public Instant getCreatedAt() {
         return createdAt;
     }
+    
     /*public static boolean validateName(String name) {
         return name.matches("^[a-zA-Z0-9@#$&!?_-]{3,64}$");
     }
