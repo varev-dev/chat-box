@@ -1,18 +1,32 @@
-package dev.varev.chatserver;
+package dev.varev.chatserver.channel;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.time.Instant;
+import java.util.UUID;
 
 public class Channel {
+    private final UUID id;
     private final String name;
-    private final Set<ClientHandler> clients;
+    private final Instant createdAt;
 
     public Channel(String name) {
+        this.id = UUID.randomUUID();
         this.name = name;
-        this.clients = new HashSet<>();
+        this.createdAt = Instant.now();
     }
 
-    public static boolean validateName(String name) {
+    public UUID getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+    
+    /*public static boolean validateName(String name) {
         return name.matches("^[a-zA-Z0-9@#$&!?_-]{3,64}$");
     }
 
@@ -47,6 +61,7 @@ public class Channel {
     public void addClient(ClientHandler client) {
         broadcastJoin(client);
         clients.add(client);
+        accounts.add(client.getAccount());
     }
 
     public boolean removeClientWithName(String name) {
@@ -75,5 +90,5 @@ public class Channel {
 
     public Set<ClientHandler> getClients() {
         return clients;
-    }
+    }*/
 }
