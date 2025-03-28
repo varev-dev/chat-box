@@ -1,3 +1,5 @@
+package dev.varev.chatshared;
+
 public class AuthenticationDTO {
     private String username;
     private String password;

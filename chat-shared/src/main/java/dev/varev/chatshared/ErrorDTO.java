@@ -1,3 +1,5 @@
+package dev.varev.chatshared;
+
 public class ErrorDTO {
     private ResponseCode code;
     private String message;

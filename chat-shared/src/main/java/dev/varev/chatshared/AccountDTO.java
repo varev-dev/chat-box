@@ -1,3 +1,5 @@
+package dev.varev.chatshared;
+
 import java.time.Instant;
 
 public class AccountDTO {
