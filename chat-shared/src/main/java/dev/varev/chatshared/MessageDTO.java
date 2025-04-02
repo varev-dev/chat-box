@@ -1,4 +1,10 @@
 package dev.varev.chatshared;
 
-public class MessageDTO {
+import java.time.Instant;
+
+public record MessageDTO(Instant createdAt, String content) {
+    @Override
+    public String toString() {
+        return "[" + createdAt + "] " + content;
+    }
 }
