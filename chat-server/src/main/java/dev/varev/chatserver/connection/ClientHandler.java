@@ -45,12 +45,15 @@ public class ClientHandler implements Runnable {
                 if (input instanceof Request request) {
                     if (request instanceof SendMessageRequest smr) {
                         System.out.println(smr.getMessage());
+                        var connected = ConnectionManager.getInstance();
+                        connected.getConnectedClients().forEach(_ -> send(smr.getMessage()));
                     }
                 }
             } catch (IOException | ClassNotFoundException e) {
-                System.out.println("");
+                throw new RuntimeException(e);
             }
         }
+        closeConnection();
     }
 
     private void closeConnection() {
