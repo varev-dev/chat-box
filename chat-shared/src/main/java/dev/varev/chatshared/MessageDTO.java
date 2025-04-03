@@ -9,7 +9,7 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageDTO implements Serializable {
+public class MessageDTO implements ResponseDTO {
     private Instant createdAt;
     private String content;
 
