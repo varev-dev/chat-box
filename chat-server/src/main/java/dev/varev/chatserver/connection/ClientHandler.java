@@ -36,18 +36,13 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
-        connectionManager.addClientHandler("1", this);
         while (!Thread.interrupted()) {
             try {
                 Object input = in.readObject();
-                System.out.println(input);
 
                 if (input instanceof Request request) {
-                    if (request instanceof SendMessageRequest smr) {
-                        System.out.println(smr.getMessage());
-                        var connected = ConnectionManager.getInstance();
-                        connected.getConnectedClients().forEach(_ -> send(smr.getMessage()));
-                    }
+                    var response = requestDispatcher.dispatch(request);
+                    // todo: handle response
                 }
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
@@ -58,8 +53,8 @@ public class ClientHandler implements Runnable {
 
     private void closeConnection() {
         try {
+            connectionManager.removeClientHandler(this);
             socket.close();
-            // remove from connection manager if authenticated?
         } catch (IOException e) {
             // TODO: error logging
             e.printStackTrace();
