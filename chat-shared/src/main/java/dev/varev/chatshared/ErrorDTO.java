@@ -1,29 +1,15 @@
 package dev.varev.chatshared;
 
-public class ErrorDTO {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ErrorDTO implements Response {
     private ResponseCode code;
     private String message;
-
-    public ErrorDTO() {}
-
-    public ErrorDTO(ResponseCode code, String message) {
-        this.code = code;
-        this.message = message;
-    }
-
-    public ResponseCode getCode() {
-        return code;
-    }
-
-    public void setCode(ResponseCode code) {
-        this.code = code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 }

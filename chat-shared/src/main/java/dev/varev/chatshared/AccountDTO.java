@@ -11,7 +11,7 @@ import java.time.Instant;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountDTO implements ResponseDTO {
+public class AccountDTO implements Response {
     private String username;
     private Instant createdAt;
     private Instant lastLogin;

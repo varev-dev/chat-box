@@ -9,7 +9,7 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageDTO implements ResponseDTO {
+public class MessageDTO implements Response {
     private Instant createdAt;
     private String content;
 
