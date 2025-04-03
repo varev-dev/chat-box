@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class Client {
     final public static String DEFAULT_HOST = "127.0.0.1";
-    final public static int DEFAULT_PORT = 8088;
+    final public static int DEFAULT_PORT = 8888;
 
     private final Socket socket;
     private final Listener listener;
@@ -24,25 +24,26 @@ public class Client {
         }
 
         try {
-            this.listener = new Listener(new ObjectInputStream(socket.getInputStream()));
             this.out = new ObjectOutputStream(socket.getOutputStream());
+            this.listener = new Listener(new ObjectInputStream(socket.getInputStream()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void run() {
-        listener.start();
+        //listener.start();
         String message;
         Scanner scanner = new Scanner(System.in);
 
-        while (true) {
+        while (socket.isConnected()) {
             try {
                 message = scanner.nextLine();
-                if (message.compareTo("exit") != 0)
+                if (message.compareTo("exit") == 0)
                     break;
                 var messageDTO = new MessageDTO(Instant.now(), message);
                 SendMessageRequest req = new SendMessageRequest(messageDTO);
+                out.flush();
                 out.writeObject(req);
             } catch (IOException e) {
                 throw new RuntimeException(e);

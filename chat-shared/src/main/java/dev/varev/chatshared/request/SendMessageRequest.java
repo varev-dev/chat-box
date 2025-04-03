@@ -1,20 +1,18 @@
 package dev.varev.chatshared.request;
 
 import dev.varev.chatshared.MessageDTO;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-public class SendMessageRequest implements Request {
+import java.io.Serializable;
+
+@Getter
+@AllArgsConstructor
+public class SendMessageRequest implements Request, Serializable {
     private final MessageDTO message;
-
-    public SendMessageRequest(MessageDTO message) {
-        this.message = message;
-    }
 
     @Override
     public RequestType getType() {
         return RequestType.SEND_MESSAGE;
-    }
-
-    public MessageDTO getMessage() {
-        return message;
     }
 }

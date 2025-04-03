@@ -1,20 +1,12 @@
-package dev.varev.chatserver.server;
-
-import dev.varev.chatserver.ClientHandler;
-import dev.varev.chatserver.account.Account;
-import dev.varev.chatserver.channel.Channel;
+package dev.varev.chatserver.connection;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Server implements Runnable {
     public static final String BROADCAST_PREFIX = "[SERVER]";
     private final int port;
-    private final Map<String, Channel> channels;
-    private final Set<Account> accounts;
     private State state;
 
     public enum State {
@@ -24,8 +16,6 @@ public class Server implements Runnable {
 
     public Server(int port) {
         this.port = port;
-        channels = new ConcurrentHashMap<>();
-        accounts = new HashSet<>();
     }
 
     public void stop() {
@@ -40,17 +30,14 @@ public class Server implements Runnable {
         }
     }
 
-    private void setupClientAndConnect(Socket socket) {
-        ClientHandler clientHandler = new ClientHandler(socket, accounts, channels);
+    private void setupClientAndConnect(Socket socket) throws IOException {
+        ClientHandler ch = new ClientHandler(socket, ConnectionManager.getInstance(), null);
 
-        var t = new Thread(clientHandler);
+        var t = new Thread(ch);
         t.start();
     }
 
     private void shutdown() {
-        for (var channel : channels.values())
-            channel.close();
-
         System.out.println("Server stopping...");
     }
 
@@ -71,13 +58,5 @@ public class Server implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public Set<Account> getAccounts() {
-        return accounts;
-    }
-
-    public Map<String, Channel> getChannels() {
-        return channels;
     }
 }
