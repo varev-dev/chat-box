@@ -1,9 +1,6 @@
 package dev.varev.chatserver.account;
 
-import dev.varev.chatshared.AuthenticationDTO;
-import dev.varev.chatshared.ErrorDTO;
-import dev.varev.chatshared.ResponseCode;
-import dev.varev.chatshared.Response;
+import dev.varev.chatshared.*;
 
 import java.util.Optional;
 
@@ -12,6 +9,14 @@ public class AccountController {
 
     public AccountController(AccountService accountService) {
         this.accountService = accountService;
+    }
+
+    public Response getAccountDetails(AccountDTO accountDTO) {
+        var usernameValidationError = validateUsername(accountDTO.getUsername());
+        if (usernameValidationError.isPresent())
+            return usernameValidationError.get();
+
+        return accountService.getAccountDetails(accountDTO);
     }
 
     public Response authenticate(AuthenticationDTO authDTO) {
@@ -31,18 +36,27 @@ public class AccountController {
     }
     
     private Optional<ErrorDTO> validateAuthenticationData(AuthenticationDTO authDTO) {
-        if (authDTO.getUsername() == null || authDTO.getPassword() == null)
-            return Optional.of(new ErrorDTO(ResponseCode.UNAUTHORIZED, "Username or password is missing."));
-        
-        if (authDTO.getUsername().length() < AccountConstants.MINIMAL_USERNAME_LENGTH)
-            return Optional.of(new ErrorDTO(ResponseCode.UNAUTHORIZED, "Account username is too short."));
-        
-        if (!AccountConstants.USERNAME_PATTERN.matcher(authDTO.getUsername()).matches())
-            return Optional.of(new ErrorDTO(ResponseCode.UNAUTHORIZED, "Invalid account username."));
-        
+        var usernameValidationError = validateUsername(authDTO.getUsername());
+
+        if (usernameValidationError.isPresent())
+            return usernameValidationError;
+
         if (authDTO.getPassword().length() < AccountConstants.MINIMAL_PASSWORD_LENGTH)
             return Optional.of(new ErrorDTO(ResponseCode.UNAUTHORIZED, "Account password is too short."));
         
+        return Optional.empty();
+    }
+
+    private Optional<ErrorDTO> validateUsername(String username) {
+        if (username == null)
+            return Optional.of(new ErrorDTO(ResponseCode.UNAUTHORIZED, "Username or password is missing."));
+
+        if (username.length() < AccountConstants.MINIMAL_USERNAME_LENGTH)
+            return Optional.of(new ErrorDTO(ResponseCode.UNAUTHORIZED, "Account username is too short."));
+
+        if (!AccountConstants.USERNAME_PATTERN.matcher(username).matches())
+            return Optional.of(new ErrorDTO(ResponseCode.UNAUTHORIZED, "Invalid account username."));
+
         return Optional.empty();
     }
 }

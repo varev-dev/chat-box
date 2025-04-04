@@ -1,19 +1,26 @@
 package dev.varev.chatserver.account;
 
 import dev.varev.chatserver.PasswordHasher;
+import dev.varev.chatserver.channel.Channel;
+import dev.varev.chatserver.channel.ChannelService;
+import dev.varev.chatserver.membership.MembershipService;
 import dev.varev.chatshared.*;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatterBuilder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class AccountService {
     private final AccountRepository repo;
+    private final MembershipService membershipService;
 
-    public AccountService(AccountRepository repo) {
+    public AccountService(AccountRepository repo, MembershipService membershipService) {
         this.repo = repo;
+        this.membershipService = membershipService;
     }
 
     public Response authenticate(AuthenticationDTO auth) {
@@ -57,6 +64,22 @@ public class AccountService {
             return new ErrorDTO(ResponseCode.UNAUTHORIZED, "Account creation failed.");
 
         return AccountMapper.toDTO(account.get());
+    }
+
+    protected Response getAccountDetails(AccountDTO accountDTO) {
+        var account = repo.getAccountWithUsername(accountDTO.getUsername());
+
+        if (account.isEmpty())
+            return new ErrorDTO(ResponseCode.NOT_FOUND, "Account not found.");
+
+        var channels = new ArrayList<Channel>();
+        membershipService.getActiveMembershipsByAccount(account.get())
+                .forEach(e -> channels.add(e.getChannel()));
+
+        var channelsDTOs = new ArrayList<ChannelDTO>();
+        channels.forEach(e -> channelsDTOs.add(new ChannelDTO(e.getName(), e.getCreatedAt())));
+
+        return new AccountDetailsDTO(AccountMapper.toDTO(account.get()), channelsDTOs);
     }
 
     public boolean block(String username) {
