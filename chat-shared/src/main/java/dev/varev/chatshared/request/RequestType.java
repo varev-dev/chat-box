@@ -4,6 +4,8 @@ public enum RequestType {
     REGISTER,
     AUTHENTICATION,
 
+    GET_ACCOUNT_DETAILS,
+
     SEND_MESSAGE,
     FETCH_MESSAGES,
 

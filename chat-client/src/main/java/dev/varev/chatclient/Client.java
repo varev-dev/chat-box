@@ -1,6 +1,7 @@
 package dev.varev.chatclient;
 
 import dev.varev.chatshared.MessageDTO;
+import dev.varev.chatshared.PropertiesLoader;
 import dev.varev.chatshared.request.SendMessageRequest;
 
 import java.io.*;
@@ -18,7 +19,7 @@ public class Client {
 
     public Client() {
         try {
-            this.socket = new Socket(DEFAULT_HOST, DEFAULT_PORT);
+            this.socket = new Socket(PropertiesLoader.getServerHost(), PropertiesLoader.getServerPort());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -32,7 +33,7 @@ public class Client {
     }
 
     public void run() {
-        //listener.start();
+        listener.start();
         String message;
         Scanner scanner = new Scanner(System.in);
 
