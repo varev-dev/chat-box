@@ -4,8 +4,9 @@ import dev.varev.chatserver.account.AccountController;
 import dev.varev.chatserver.channel.ChannelController;
 import dev.varev.chatserver.membership.MembershipController;
 import dev.varev.chatserver.message.MessageController;
-import dev.varev.chatshared.AuthenticationDTO;
-import dev.varev.chatshared.Response;
+import dev.varev.chatshared.dto.AccountDTO;
+import dev.varev.chatshared.dto.AuthenticationDTO;
+import dev.varev.chatshared.response.Response;
 import dev.varev.chatshared.request.Request;
 
 public class RequestDispatcher {
@@ -26,6 +27,7 @@ public class RequestDispatcher {
         return switch (request.getType()) {
             case REGISTER -> account.register((AuthenticationDTO) request);
             case AUTHENTICATION -> account.authenticate((AuthenticationDTO) request);
+            case GET_ACCOUNT_DETAILS -> account.getAccountDetails((AccountDTO) request);
             case SEND_MESSAGE -> null;
             case FETCH_MESSAGES -> null;
             case JOIN_CHANNEL -> null;

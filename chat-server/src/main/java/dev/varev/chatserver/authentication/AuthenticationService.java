@@ -3,7 +3,7 @@ package dev.varev.chatserver.authentication;
 import dev.varev.chatserver.account.AccountService;
 import dev.varev.chatserver.connection.ConnectionManager;
 
-import dev.varev.chatshared.AuthenticationDTO;
+import dev.varev.chatshared.dto.AuthenticationDTO;
 
 public class AuthenticationService {
     private final AccountService accountService;

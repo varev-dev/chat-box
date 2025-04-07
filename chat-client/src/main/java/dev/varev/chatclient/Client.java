@@ -1,6 +1,6 @@
 package dev.varev.chatclient;
 
-import dev.varev.chatshared.MessageDTO;
+import dev.varev.chatshared.dto.MessageDTO;
 import dev.varev.chatshared.PropertiesLoader;
 import dev.varev.chatshared.request.SendMessageRequest;
 

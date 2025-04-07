@@ -1,8 +1,8 @@
-package dev.varev.chatshared;
+package dev.varev.chatshared.dto;
 
+import dev.varev.chatshared.response.Response;
 import lombok.*;
 
-import java.io.Serializable;
 import java.time.Instant;
 
 @Getter

@@ -1,4 +1,4 @@
-package dev.varev.chatshared;
+package dev.varev.chatshared.dto;
 
 import java.time.Instant;
 

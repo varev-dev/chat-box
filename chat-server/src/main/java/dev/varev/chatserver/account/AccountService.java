@@ -2,16 +2,16 @@ package dev.varev.chatserver.account;
 
 import dev.varev.chatserver.PasswordHasher;
 import dev.varev.chatserver.channel.Channel;
-import dev.varev.chatserver.channel.ChannelService;
 import dev.varev.chatserver.membership.MembershipService;
-import dev.varev.chatshared.*;
+import dev.varev.chatshared.dto.*;
+import dev.varev.chatshared.response.Response;
+import dev.varev.chatshared.response.ResponseCode;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class AccountService {

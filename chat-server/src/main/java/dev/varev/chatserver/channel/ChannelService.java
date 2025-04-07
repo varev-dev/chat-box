@@ -3,9 +3,10 @@ package dev.varev.chatserver.channel;
 import dev.varev.chatserver.connection.ClientHandler;
 import dev.varev.chatserver.connection.ConnectionManager;
 import dev.varev.chatserver.message.Message;
-import dev.varev.chatserver.message.MessageDTO;
 import dev.varev.chatserver.message.MessageService;
+import dev.varev.chatshared.dto.MessageDTO;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
 
@@ -34,6 +35,6 @@ public class ChannelService {
             case MESSAGE, ADMIN_MESSAGE -> messageService.mapToDTO(message);
         };
 
-        connectedClients.forEach(e -> e.sendMessage(messageDTO));
+        connectedClients.forEach(e -> e.send(new MessageDTO(Instant.now(), message.getContent())));
     }
 }

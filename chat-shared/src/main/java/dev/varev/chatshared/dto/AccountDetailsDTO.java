@@ -1,6 +1,7 @@
-package dev.varev.chatshared;
+package dev.varev.chatshared.dto;
 
 
+import dev.varev.chatshared.response.Response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

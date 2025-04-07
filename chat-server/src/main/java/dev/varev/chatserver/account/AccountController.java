@@ -1,6 +1,10 @@
 package dev.varev.chatserver.account;
 
-import dev.varev.chatshared.*;
+import dev.varev.chatshared.dto.AccountDTO;
+import dev.varev.chatshared.dto.AuthenticationDTO;
+import dev.varev.chatshared.dto.ErrorDTO;
+import dev.varev.chatshared.response.Response;
+import dev.varev.chatshared.response.ResponseCode;
 
 import java.util.Optional;
 

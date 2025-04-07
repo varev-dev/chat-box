@@ -1,10 +1,7 @@
 package dev.varev.chatserver.connection;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.varev.chatserver.message.Message;
-import dev.varev.chatshared.MessageDTO;
+import dev.varev.chatshared.dto.MessageDTO;
 import dev.varev.chatshared.request.Request;
-import dev.varev.chatshared.request.SendMessageRequest;
 
 import java.io.*;
 import java.net.Socket;

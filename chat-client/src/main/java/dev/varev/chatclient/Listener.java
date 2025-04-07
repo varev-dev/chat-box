@@ -1,6 +1,6 @@
 package dev.varev.chatclient;
 
-import dev.varev.chatshared.MessageDTO;
+import dev.varev.chatshared.dto.MessageDTO;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

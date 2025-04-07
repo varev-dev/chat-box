@@ -1,6 +1,6 @@
 package dev.varev.chatshared.request;
 
-import dev.varev.chatshared.MessageDTO;
+import dev.varev.chatshared.dto.MessageDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
