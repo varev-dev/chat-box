@@ -28,31 +28,20 @@ public class Account {
         this.id = UUID.randomUUID();
         this.username = username;
         this.salt = PasswordHasher.generateSalt();
-
-        try {
-            this.password = PasswordHasher.hashPassword(password, salt);
-        } catch (Exception e) {
-            // TODO: throw Password hashing exception with an information
-            throw new PasswordHashException(this.id);
-        }
-
+        setPassword(password);
         this.createdAt = Instant.now();
         this.lastLogin = createdAt;
         this.blocked = false;
         this.blockedUntil = null;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(String password) throws PasswordHashException {
         try {
             this.password = PasswordHasher.hashPassword(password, salt);
         } catch (Exception e) {
-            // TODO: throw Password hashing exception with an information
+            // TODO: log
             throw new PasswordHashException(this.id);
         }
-    }
-
-    protected byte[] getSalt() {
-        return this.salt;
     }
 
     public void unblock() {
@@ -63,5 +52,4 @@ public class Account {
         this.blocked = true;
         this.blockedUntil = Instant.now().plus(duration);
     }
-
 }

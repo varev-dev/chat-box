@@ -3,17 +3,13 @@ package dev.varev.chatshared.dto;
 
 import dev.varev.chatshared.response.Response;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Value
 @AllArgsConstructor
-@NoArgsConstructor
 public class AccountDetailsDTO implements Response {
-    private AccountDTO account;
-    private List<ChannelDTO> channels;
+    AccountDTO account;
+    List<ChannelDTO> channels;
 }

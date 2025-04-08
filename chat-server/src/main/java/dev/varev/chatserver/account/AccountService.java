@@ -33,8 +33,8 @@ public class AccountService {
             return new ErrorDTO(ResponseCode.NOT_FOUND, "Account not found.");
 
         if (account.get().isBlocked())
-            return new ErrorDTO(ResponseCode.UNAUTHORIZED, "Account is locked up to " +
-                    new DateTimeFormatterBuilder().appendPattern("dd-MM-yyyy HH:mm:ss").toFormatter().format(account.get().getBlockedUntil()) + ".");
+            return new ErrorDTO(ResponseCode.UNAUTHORIZED, "Account is locked up to " + new DateTimeFormatterBuilder()
+                    .appendPattern("dd-MM-yyyy HH:mm:ss").toFormatter().format(account.get().getBlockedUntil()) + ".");
 
         try {
             boolean verified = PasswordHasher.verifyPassword(password, account.get().getPassword(), account.get().getSalt());
@@ -56,7 +56,7 @@ public class AccountService {
         var account = repo.getAccountWithUsername(username);
 
         if (account.isPresent())
-            return new ErrorDTO(ResponseCode.UNAUTHORIZED, "Account with given name exists.");
+            return new ErrorDTO(ResponseCode.FORBIDDEN, "Account with given name exists.");
 
         account = createAccount(username, password);
 

@@ -3,15 +3,11 @@ package dev.varev.chatshared.dto;
 import dev.varev.chatshared.response.Response;
 import dev.varev.chatshared.response.ResponseCode;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
 
-@Getter
-@Setter
+@Value
 @AllArgsConstructor
-@NoArgsConstructor
 public class ErrorDTO implements Response {
-    private ResponseCode code;
-    private String message;
+    ResponseCode code;
+    String message;
 }

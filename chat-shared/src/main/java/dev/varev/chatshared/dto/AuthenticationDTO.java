@@ -2,15 +2,11 @@ package dev.varev.chatshared.dto;
 
 import dev.varev.chatshared.response.Response;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
 
-@Setter
-@Getter
+@Value
 @AllArgsConstructor
-@NoArgsConstructor
 public class AuthenticationDTO implements Response {
-    private String username;
-    private String password;
+    String username;
+    String password;
 }
