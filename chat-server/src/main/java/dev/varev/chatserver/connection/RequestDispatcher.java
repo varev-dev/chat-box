@@ -28,6 +28,7 @@ public class RequestDispatcher {
 
     public Response dispatch(Request request) {
         // TODO: parse request payload into specified type
+        // TODO: consider ClientHandler as param for further operations
         return switch (request.getType()) {
             case REGISTER -> account.register(/*(AuthenticationDTO) request*/new AuthenticationDTO("TO", "DO"));
             case AUTHENTICATION -> account.authenticate(new AuthenticationDTO("TO", "DO"));

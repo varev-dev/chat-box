@@ -3,6 +3,7 @@ package dev.varev.chatserver.connection;
 import dev.varev.chatshared.dto.MessageDTO;
 import dev.varev.chatshared.request.Request;
 import dev.varev.chatshared.response.ExitResponse;
+import dev.varev.chatshared.response.Response;
 
 import java.io.*;
 import java.net.Socket;
@@ -27,9 +28,9 @@ public class ClientHandler implements Runnable {
         this.requestDispatcher = requestDispatcher;
     }
 
-    public void send(MessageDTO request) {
+    public void send(Response response) {
         try {
-            out.writeObject(request);
+            out.writeObject(response);
         } catch (IOException e) {
             // todo: log
         }
@@ -43,6 +44,9 @@ public class ClientHandler implements Runnable {
 
                 if (input instanceof Request request) {
                     var response = requestDispatcher.dispatch(request);
+                    // todo: if response==null ret error BAD_REQUEST
+
+                    send(response);
 
                     if (response instanceof ExitResponse)
                         break;
@@ -50,6 +54,7 @@ public class ClientHandler implements Runnable {
                 }
             } catch (IOException | ClassNotFoundException e) {
                 // todo: log forced disconnection? (sth else?)
+                // todo: send error INTERNAL
                 break;
             }
         }

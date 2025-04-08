@@ -1,6 +1,5 @@
 package dev.varev.chatserver.account;
 
-import dev.varev.chatserver.membership.MembershipRepository;
 import dev.varev.chatserver.membership.MembershipService;
 import dev.varev.chatshared.dto.AccountDTO;
 import dev.varev.chatshared.dto.AuthenticationDTO;
@@ -62,8 +61,7 @@ public class AccountServiceTest {
             return;
         }
 
-        var account = accounts.stream().findFirst().get();
-        var data = new AuthenticationDTO(account.getUsername(), account.getPassword());
+        var data = new AuthenticationDTO("exampleUser1", "testing");
         var result = service.authenticate(data);
 
         Assert.assertTrue(result instanceof AccountDTO);
