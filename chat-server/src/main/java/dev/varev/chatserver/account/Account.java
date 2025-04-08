@@ -1,19 +1,25 @@
 package dev.varev.chatserver.account;
 
 import dev.varev.chatserver.PasswordHasher;
+import dev.varev.chatserver.exception.PasswordHashException;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
+@Getter
 public class Account {
     private final UUID id;
     private final String username;
+
     private String password;
     private final byte[] salt;
 
-    private final Instant createdAt;
+    @Setter
     private Instant lastLogin;
+    private final Instant createdAt;
 
     private boolean blocked;
     private Instant blockedUntil;
@@ -22,47 +28,20 @@ public class Account {
         this.id = UUID.randomUUID();
         this.username = username;
         this.salt = PasswordHasher.generateSalt();
-
-        try {
-            this.password = PasswordHasher.hashPassword(password, salt);
-        } catch (Exception e) {
-            // TODO: throw Password hashing exception with an information
-            e.printStackTrace();
-        }
-
+        setPassword(password);
         this.createdAt = Instant.now();
         this.lastLogin = createdAt;
         this.blocked = false;
         this.blockedUntil = null;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return this.password;
-    }
-
-    public void setPassword(String password) {
+    public void setPassword(String password) throws PasswordHashException {
         try {
             this.password = PasswordHasher.hashPassword(password, salt);
         } catch (Exception e) {
-            // TODO: throw Password hasing exception with an information
-            e.printStackTrace();
+            // TODO: log
+            throw new PasswordHashException(this.id);
         }
-    }
-
-    protected byte[] getSalt() {
-        return this.salt;
-    }
-
-    public boolean isBlocked() {
-        return blocked;
     }
 
     public void unblock() {
@@ -72,17 +51,5 @@ public class Account {
     public void block(Duration duration) {
         this.blocked = true;
         this.blockedUntil = Instant.now().plus(duration);
-    }
-
-    public Instant getBlockedUntil() {
-        return blockedUntil;
-    }
-
-    public Instant getLastLogin() {
-        return lastLogin;
-    }
-
-    public void setLastLogin(Instant lastLogin) {
-        this.lastLogin = lastLogin;
     }
 }

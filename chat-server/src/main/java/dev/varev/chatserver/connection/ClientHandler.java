@@ -1,57 +1,83 @@
 package dev.varev.chatserver.connection;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.varev.chatserver.account.AccountController;
-import dev.varev.chatserver.channel.ChannelController;
-import dev.varev.chatserver.membership.MembershipController;
-import dev.varev.chatserver.message.MessageController;
-import dev.varev.chatserver.message.MessageDTO;
+import dev.varev.chatshared.dto.MessageDTO;
+import dev.varev.chatshared.request.Request;
+import dev.varev.chatshared.response.ExitResponse;
+import dev.varev.chatshared.response.Response;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
+import java.util.stream.Stream;
 
 public class ClientHandler implements Runnable {
     private final Socket socket;
-    private final BufferedReader in;
-    private final PrintWriter out;
-    private final ObjectMapper mapper;
+    private final ObjectInputStream in;
+    private final ObjectOutputStream out;
     private final ConnectionManager connectionManager;
     private final RequestDispatcher requestDispatcher;
 
-    public ClientHandler(Socket socket, ObjectMapper mapper, ConnectionManager connectionManager, RequestDispatcher requestDispatcher) throws IOException {
+    public ClientHandler(Socket socket, ConnectionManager connectionManager, RequestDispatcher requestDispatcher) {
         this.socket = socket;
-        this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        this.out = new PrintWriter(socket.getOutputStream(), true);
-        this.mapper = mapper;
+        try {
+            this.out = new ObjectOutputStream(socket.getOutputStream());
+            this.in = new ObjectInputStream(socket.getInputStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         this.connectionManager = connectionManager;
         this.requestDispatcher = requestDispatcher;
     }
 
-    public void sendMessage(MessageDTO message) {
-        out.println(message);
+    public void send(Response response) {
+        try {
+            out.writeObject(response);
+        } catch (IOException e) {
+            // todo: log
+        }
     }
 
     @Override
     public void run() {
-        while (Thread.interrupted()) {
-            continue;
-        }
-    }
+        while (!Thread.interrupted()) {
+            try {
+                Object input = in.readObject();
 
-    private void parseRequest() throws IOException {
-        
+                if (input instanceof Request request) {
+                    var response = requestDispatcher.dispatch(request);
+                    // todo: if response==null ret error BAD_REQUEST
+
+                    send(response);
+
+                    if (response instanceof ExitResponse)
+                        break;
+                    // todo: handle response
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                // todo: log forced disconnection? (sth else?)
+                // todo: send error INTERNAL
+                break;
+            }
+        }
+        closeConnection();
     }
 
     private void closeConnection() {
+        connectionManager.removeClientHandler(this);
+
+        Stream.of(in, out).forEach(stream -> {
+            try {
+                if (stream != null)
+                    stream.close();
+            } catch (IOException ignored) {
+                // TODO: log exception during in/out closing
+            }
+        });
+
         try {
             socket.close();
-            connectionManager.removeClientHandler(this);
         } catch (IOException e) {
-            // TODO: error logging
-            e.printStackTrace();
+            // TODO: log
         }
+
     }
 }

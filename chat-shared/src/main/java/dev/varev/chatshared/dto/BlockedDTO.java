@@ -1,3 +1,5 @@
+package dev.varev.chatshared.dto;
+
 import java.time.Instant;
 
 public class BlockedDTO {

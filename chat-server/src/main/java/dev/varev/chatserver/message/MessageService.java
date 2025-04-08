@@ -2,6 +2,7 @@ package dev.varev.chatserver.message;
 
 import dev.varev.chatserver.account.Account;
 import dev.varev.chatserver.channel.Channel;
+import dev.varev.chatshared.dto.MessageDTO;
 
 import java.time.Instant;
 import java.util.List;

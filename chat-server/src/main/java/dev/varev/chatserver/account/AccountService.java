@@ -1,72 +1,88 @@
 package dev.varev.chatserver.account;
 
 import dev.varev.chatserver.PasswordHasher;
-import dev.varev.chatserver.exception.AccountAlreadyExistsException;
-import dev.varev.chatserver.exception.AccountDataValidationException;
+import dev.varev.chatserver.channel.Channel;
+import dev.varev.chatserver.membership.MembershipService;
+import dev.varev.chatshared.dto.*;
+import dev.varev.chatshared.response.Response;
+import dev.varev.chatshared.response.ResponseCode;
 
-import javax.security.auth.login.AccountLockedException;
-import javax.security.auth.login.AccountNotFoundException;
-import javax.security.auth.login.CredentialException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatterBuilder;
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class AccountService {
     private final AccountRepository repo;
+    private final MembershipService membershipService;
 
-    public AccountService(AccountRepository repo) {
+    public AccountService(AccountRepository repo, MembershipService membershipService) {
         this.repo = repo;
+        this.membershipService = membershipService;
     }
 
-    public Optional<Account> verify(String username, String password)
-            throws AccountNotFoundException, CredentialException, AccountLockedException {
+    public Response authenticate(AuthenticationDTO auth) {
+        String username = auth.getUsername();
+        String password = auth.getPassword();
+
         var account = repo.getAccountWithUsername(username);
 
         if (account.isEmpty())
-            throw new AccountNotFoundException("Account with provided username not found.");
+            return new ErrorDTO(ResponseCode.NOT_FOUND, "Account not found.");
 
         if (account.get().isBlocked())
-            throw new AccountLockedException("Account is locked up to " + new DateTimeFormatterBuilder()
+            return new ErrorDTO(ResponseCode.UNAUTHORIZED, "Account is locked up to " + new DateTimeFormatterBuilder()
                     .appendPattern("dd-MM-yyyy HH:mm:ss").toFormatter().format(account.get().getBlockedUntil()) + ".");
 
         try {
             boolean verified = PasswordHasher.verifyPassword(password, account.get().getPassword(), account.get().getSalt());
             if (!verified)
-                throw new CredentialException("Account verification failed due to wrong password.");
+                return new ErrorDTO(ResponseCode.UNAUTHORIZED, "Invalid password.");
 
             account.get().setLastLogin(Instant.now());
-            return account;
+            return AccountMapper.toDTO(account.get());
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             // TODO: Log verification exception
-            return Optional.empty();
+            return new ErrorDTO(ResponseCode.FORBIDDEN, "Authentication failed.");
         }
     }
 
-    public Optional<Account> register(String username, String password)
-            throws AccountDataValidationException, AccountAlreadyExistsException {
-        if (username.length() < AccountConstants.MINIMAL_USERNAME_LENGTH)
-            throw new AccountDataValidationException("Account username has to be at least " +
-                    AccountConstants.MINIMAL_USERNAME_LENGTH + " characters.");
-
-        if (!AccountConstants.USERNAME_PATTERN.matcher(username).matches())
-            throw new AccountDataValidationException("Account username contains invalid characters.");
+    public Response register(AuthenticationDTO authDTO) {
+        String username = authDTO.getUsername();
+        String password = authDTO.getPassword();
 
         var account = repo.getAccountWithUsername(username);
 
         if (account.isPresent())
-            throw new AccountAlreadyExistsException(username);
+            return new ErrorDTO(ResponseCode.FORBIDDEN, "Account with given name exists.");
 
-        if (password.length() < AccountConstants.MINIMAL_PASSWORD_LENGTH)
-            throw new AccountDataValidationException("Account password has to vbe at least " +
-                    AccountConstants.MINIMAL_PASSWORD_LENGTH + " characters.");
+        account = createAccount(username, password);
 
-        return createAccount(username, password);
+        if (account.isEmpty())
+            return new ErrorDTO(ResponseCode.UNAUTHORIZED, "Account creation failed.");
+
+        return AccountMapper.toDTO(account.get());
+    }
+
+    protected Response getAccountDetails(AccountDTO accountDTO) {
+        var account = repo.getAccountWithUsername(accountDTO.getUsername());
+
+        if (account.isEmpty())
+            return new ErrorDTO(ResponseCode.NOT_FOUND, "Account not found.");
+
+        var channels = new ArrayList<Channel>();
+        membershipService.getActiveMembershipsByAccount(account.get())
+                .forEach(e -> channels.add(e.getChannel()));
+
+        var channelsDTOs = new ArrayList<ChannelDTO>();
+        channels.forEach(e -> channelsDTOs.add(new ChannelDTO(e.getName(), e.getCreatedAt())));
+
+        return new AccountDetailsDTO(AccountMapper.toDTO(account.get()), channelsDTOs);
     }
 
     public boolean block(String username) {
-
         return false;
     }
 
