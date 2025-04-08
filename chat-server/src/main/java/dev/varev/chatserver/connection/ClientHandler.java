@@ -2,9 +2,11 @@ package dev.varev.chatserver.connection;
 
 import dev.varev.chatshared.dto.MessageDTO;
 import dev.varev.chatshared.request.Request;
+import dev.varev.chatshared.response.ExitResponse;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.stream.Stream;
 
 public class ClientHandler implements Runnable {
     private final Socket socket;
@@ -28,7 +30,9 @@ public class ClientHandler implements Runnable {
     public void send(MessageDTO request) {
         try {
             out.writeObject(request);
-        } catch (IOException ignored) {}
+        } catch (IOException e) {
+            // todo: log
+        }
     }
 
     @Override
@@ -39,22 +43,36 @@ public class ClientHandler implements Runnable {
 
                 if (input instanceof Request request) {
                     var response = requestDispatcher.dispatch(request);
+
+                    if (response instanceof ExitResponse)
+                        break;
                     // todo: handle response
                 }
             } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
+                // todo: log forced disconnection? (sth else?)
+                break;
             }
         }
         closeConnection();
     }
 
     private void closeConnection() {
+        connectionManager.removeClientHandler(this);
+
+        Stream.of(in, out).forEach(stream -> {
+            try {
+                if (stream != null)
+                    stream.close();
+            } catch (IOException ignored) {
+                // TODO: log exception during in/out closing
+            }
+        });
+
         try {
-            connectionManager.removeClientHandler(this);
             socket.close();
         } catch (IOException e) {
-            // TODO: error logging
-            e.printStackTrace();
+            // TODO: log
         }
+
     }
 }

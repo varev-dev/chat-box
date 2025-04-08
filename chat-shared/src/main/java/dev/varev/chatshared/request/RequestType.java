@@ -12,4 +12,6 @@ public enum RequestType {
     JOIN_CHANNEL,
     LEAVE_CHANNEL,
     PUBLIC_CHANNELS,
+
+    EXIT
 }
