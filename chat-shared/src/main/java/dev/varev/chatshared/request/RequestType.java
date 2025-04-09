@@ -2,7 +2,7 @@ package dev.varev.chatshared.request;
 
 public enum RequestType {
     REGISTER,
-    AUTHENTICATION,
+    AUTHENTICATE,
 
     GET_ACCOUNT_DETAILS,
 

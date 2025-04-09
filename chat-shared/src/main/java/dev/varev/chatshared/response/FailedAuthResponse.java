@@ -1,17 +1,17 @@
 package dev.varev.chatshared.response;
 
+import dev.varev.chatshared.dto.ErrorDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.io.Serializable;
-
 @Getter
 @AllArgsConstructor
-public class ExitResponse implements Response {
-    boolean success;
+public class FailedAuthResponse implements Response {
+    ErrorDTO error;
+    ResponseCode code;
 
     @Override
     public ResponseCode getCode() {
-        return ResponseCode.OK;
+        return this.code;
     }
 }

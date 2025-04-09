@@ -1,12 +1,13 @@
 package dev.varev.chatshared.dto;
 
-import dev.varev.chatshared.response.Response;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+import java.io.Serializable;
+
 @Value
 @AllArgsConstructor
-public class AuthenticationDTO implements Response {
+public class AuthenticationDTO implements Serializable {
     String username;
     String password;
 }

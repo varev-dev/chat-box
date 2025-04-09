@@ -4,8 +4,8 @@ import dev.varev.chatserver.PasswordHasher;
 import dev.varev.chatserver.channel.Channel;
 import dev.varev.chatserver.membership.MembershipService;
 import dev.varev.chatshared.dto.*;
-import dev.varev.chatshared.response.Response;
-import dev.varev.chatshared.response.ResponseCode;
+import dev.varev.chatshared.response.*;
+import dev.varev.chatshared.dto.ErrorCode;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -30,22 +30,24 @@ public class AccountService {
         var account = repo.getAccountWithUsername(username);
 
         if (account.isEmpty())
-            return new ErrorDTO(ResponseCode.NOT_FOUND, "Account not found.");
+            return new FailedAuthResponse(new ErrorDTO(ErrorCode.NOT_FOUND, "Account not found."), ResponseCode.FAILED);
 
         if (account.get().isBlocked())
-            return new ErrorDTO(ResponseCode.UNAUTHORIZED, "Account is locked up to " + new DateTimeFormatterBuilder()
-                    .appendPattern("dd-MM-yyyy HH:mm:ss").toFormatter().format(account.get().getBlockedUntil()) + ".");
+            return new FailedAuthResponse(
+                    new ErrorDTO(ErrorCode.UNAUTHORIZED, "Account is locked up to " + new DateTimeFormatterBuilder()
+                        .appendPattern("dd-MM-yyyy HH:mm:ss").toFormatter().format(account.get().getBlockedUntil()) + "."),
+                    ResponseCode.FAILED);
 
         try {
             boolean verified = PasswordHasher.verifyPassword(password, account.get().getPassword(), account.get().getSalt());
             if (!verified)
-                return new ErrorDTO(ResponseCode.UNAUTHORIZED, "Invalid password.");
+                return new FailedAuthResponse(new ErrorDTO(ErrorCode.UNAUTHORIZED, "Invalid password."), ResponseCode.FAILED);
 
             account.get().setLastLogin(Instant.now());
-            return AccountMapper.toDTO(account.get());
+            return new SuccessfulAuthResponse(AccountMapper.toDTO(account.get()));
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             // TODO: Log verification exception
-            return new ErrorDTO(ResponseCode.FORBIDDEN, "Authentication failed.");
+            return new FailedAuthResponse(new ErrorDTO(ErrorCode.FORBIDDEN, "Authentication failed."), ResponseCode.SERVER_ERROR);
         }
     }
 
@@ -56,21 +58,21 @@ public class AccountService {
         var account = repo.getAccountWithUsername(username);
 
         if (account.isPresent())
-            return new ErrorDTO(ResponseCode.FORBIDDEN, "Account with given name exists.");
+            return new FailedAuthResponse(new ErrorDTO(ErrorCode.FORBIDDEN, "Account with given name exists."), ResponseCode.FAILED);
 
         account = createAccount(username, password);
 
         if (account.isEmpty())
-            return new ErrorDTO(ResponseCode.UNAUTHORIZED, "Account creation failed.");
+            return new FailedAuthResponse(new ErrorDTO(ErrorCode.UNAUTHORIZED, "Account creation failed."), ResponseCode.FAILED);
 
-        return AccountMapper.toDTO(account.get());
+        return new SuccessfulAuthResponse(AccountMapper.toDTO(account.get()));
     }
 
     protected Response getAccountDetails(AccountDTO accountDTO) {
         var account = repo.getAccountWithUsername(accountDTO.getUsername());
 
         if (account.isEmpty())
-            return new ErrorDTO(ResponseCode.NOT_FOUND, "Account not found.");
+            return new FailedAuthResponse(new ErrorDTO(ErrorCode.NOT_FOUND, "Account not found."), ResponseCode.FAILED);
 
         var channels = new ArrayList<Channel>();
         membershipService.getActiveMembershipsByAccount(account.get())
@@ -79,7 +81,7 @@ public class AccountService {
         var channelsDTOs = new ArrayList<ChannelDTO>();
         channels.forEach(e -> channelsDTOs.add(new ChannelDTO(e.getName(), e.getCreatedAt())));
 
-        return new AccountDetailsDTO(AccountMapper.toDTO(account.get()), channelsDTOs);
+        return new AccountDetailsResponse(new AccountDetailsDTO(AccountMapper.toDTO(account.get()), channelsDTOs));
     }
 
     public boolean block(String username) {

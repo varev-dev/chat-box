@@ -1,13 +1,13 @@
 package dev.varev.chatshared.dto;
 
-import dev.varev.chatshared.response.Response;
-import dev.varev.chatshared.response.ResponseCode;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+import java.io.Serializable;
+
 @Value
 @AllArgsConstructor
-public class ErrorDTO implements Response {
-    ResponseCode code;
+public class ErrorDTO implements Serializable {
+    ErrorCode code;
     String message;
 }

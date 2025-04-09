@@ -5,7 +5,9 @@ import dev.varev.chatshared.dto.AccountDTO;
 import dev.varev.chatshared.dto.AuthenticationDTO;
 import dev.varev.chatshared.dto.ErrorDTO;
 
-import dev.varev.chatshared.response.ResponseCode;
+import dev.varev.chatshared.dto.ErrorCode;
+import dev.varev.chatshared.response.FailedAuthResponse;
+import dev.varev.chatshared.response.SuccessfulAuthResponse;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,8 +38,8 @@ public class AccountServiceTest {
         var data = new AuthenticationDTO("ValidData@213", "ValidPassword");
         var result = service.register(data);
 
-        Assert.assertTrue(result instanceof AccountDTO);
-        Assert.assertEquals(data.getUsername(), ((AccountDTO) result).getUsername());
+        Assert.assertTrue(result instanceof SuccessfulAuthResponse);
+        Assert.assertEquals(data.getUsername(), ((SuccessfulAuthResponse) result).getAccount().getUsername());
     }
 
     @Test
@@ -50,8 +52,8 @@ public class AccountServiceTest {
         var data = new AuthenticationDTO(account.getUsername(), "ValidPassword");
         var result = service.register(data);
 
-        Assert.assertTrue(result instanceof ErrorDTO);
-        Assert.assertEquals(ResponseCode.FORBIDDEN, ((ErrorDTO) result).getCode());
+        Assert.assertTrue(result instanceof FailedAuthResponse);
+        Assert.assertEquals(ErrorCode.FORBIDDEN, ((FailedAuthResponse) result).getError().getCode());
     }
 
     @Test
@@ -64,8 +66,8 @@ public class AccountServiceTest {
         var data = new AuthenticationDTO("exampleUser1", "testing");
         var result = service.authenticate(data);
 
-        Assert.assertTrue(result instanceof AccountDTO);
-        Assert.assertEquals(data.getUsername(), ((AccountDTO) result).getUsername());
+        Assert.assertTrue(result instanceof SuccessfulAuthResponse);
+        Assert.assertEquals(data.getUsername(), ((SuccessfulAuthResponse) result).getAccount().getUsername());
     }
 
     @Test
@@ -73,7 +75,7 @@ public class AccountServiceTest {
         var data = new AuthenticationDTO("NotFound", "RandomPassword");
         var result = service.authenticate(data);
 
-        Assert.assertTrue(result instanceof ErrorDTO);
-        Assert.assertEquals(ResponseCode.NOT_FOUND, ((ErrorDTO) result).getCode());
+        Assert.assertTrue(result instanceof FailedAuthResponse);
+        Assert.assertEquals(ErrorCode.NOT_FOUND, ((FailedAuthResponse) result).getError().getCode());
     }
 }

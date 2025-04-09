@@ -6,6 +6,7 @@ import dev.varev.chatserver.membership.MembershipController;
 import dev.varev.chatserver.message.MessageController;
 import dev.varev.chatshared.dto.AccountDTO;
 import dev.varev.chatshared.dto.AuthenticationDTO;
+import dev.varev.chatshared.request.AuthenticationRequest;
 import dev.varev.chatshared.response.ExitResponse;
 import dev.varev.chatshared.response.Response;
 import dev.varev.chatshared.request.Request;
@@ -30,8 +31,8 @@ public class RequestDispatcher {
         // TODO: parse request payload into specified type
         // TODO: consider ClientHandler as param for further operations
         return switch (request.getType()) {
-            case REGISTER -> account.register(/*(AuthenticationDTO) request*/new AuthenticationDTO("TO", "DO"));
-            case AUTHENTICATION -> account.authenticate(new AuthenticationDTO("TO", "DO"));
+            case REGISTER -> account.register(((AuthenticationRequest) request).getAuth());
+            case AUTHENTICATE -> account.authenticate(((AuthenticationRequest) request).getAuth());
             case GET_ACCOUNT_DETAILS -> account.getAccountDetails(new AccountDTO("TO", Instant.now(), Instant.now()));
             case SEND_MESSAGE -> null;
             case FETCH_MESSAGES -> null;
