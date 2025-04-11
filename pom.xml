@@ -12,6 +12,7 @@
     <modules>
         <module>chat-server</module>
         <module>chat-client</module>
+        <module>chat-client-desktop</module>
         <module>chat-shared</module>
     </modules>
 

@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>chat-shared</artifactId>
+    <name>chat-shared</name>
 
     <properties>
         <maven.compiler.source>23</maven.compiler.source>
