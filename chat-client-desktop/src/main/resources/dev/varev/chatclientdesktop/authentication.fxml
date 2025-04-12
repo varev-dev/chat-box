@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.varev.chatclientdesktop.controller.AuthenticationController">
+   <children>
+      <Button fx:id="submit_login" layoutX="270.0" layoutY="262.0" mnemonicParsing="false" text="Login" />
+      <PasswordField layoutX="219.0" layoutY="215.0" />
+      <Label layoutX="219.0" layoutY="200.0" text="Password" />
+      <TextField layoutX="219.0" layoutY="166.0" />
+      <Label layoutX="219.0" layoutY="148.0" text="Username" />
+      <Hyperlink alignment="TOP_LEFT" layoutX="220.0" layoutY="300.0" text="No account? Create one." />
+      <Text layoutX="243.6" layoutY="115.0" stroke="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome back!">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Text>
+   </children>
+</AnchorPane>
